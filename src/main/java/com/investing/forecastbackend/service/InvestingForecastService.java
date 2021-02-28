@@ -39,7 +39,8 @@ public class InvestingForecastService {
 
     public ForecastResponse getInvestmentOptions(final ForecastRequest request) throws IOException {
         List<InvestmentDetail> details = getInvestmentOptions();
-        System.out.println("request: " + request);
+        System.out.println("HELLO BELOW");
+        System.out.println(request);
         // TODO write algorithm to calculate investment forecast from request configuration
         List<Double> result = getForeCast(request.getRequest(), details);
         ForecastResponse response = new ForecastResponse();
