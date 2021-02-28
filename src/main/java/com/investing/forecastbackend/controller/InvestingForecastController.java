@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,6 +33,7 @@ public class InvestingForecastController {
     private InvestingForecastService service = new InvestingForecastService();
     private ObjectMapper objectMapper = new ObjectMapper();
 
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
     @GetMapping
     public ResponseEntity<List<InvestmentDetail>> getInvestmentOptions() throws IOException {
         objectMapper = new ObjectMapper();
@@ -41,6 +43,7 @@ public class InvestingForecastController {
         return ResponseEntity.ok(service.getInvestmentOptions());
     }
 
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
     @PostMapping
     @SneakyThrows
     public ResponseEntity<ForecastResponse> getInvestmentOptions(@RequestBody final ForecastRequest request) throws IOException {
