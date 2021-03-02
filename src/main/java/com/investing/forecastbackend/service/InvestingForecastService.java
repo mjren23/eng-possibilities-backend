@@ -51,26 +51,77 @@ public class InvestingForecastService {
     public List<Double> getForeCast(Map<String, Double> userRequest, List<InvestmentDetail> details) {
         Map<Integer, Double> totalYearAmount = new HashMap<>();
         System.out.println(userRequest);
+
+        Map<Integer, Double> returnForYear = new HashMap<Integer, Double>();
+
         for (InvestmentDetail i : details) {
-            //user input for category i
-            System.out.println(i.getCategory());
+            List<String> data = i.getData();
+            double total = 0;
+            for (int year = 0; year < data.size(); year++) {
+                double weight = 0;
+                if (year < 2) {
+                    weight = 0.05;
+                }
+                else if (year < 8) {
+                    weight = 0.1;
+                }
+                else {
+                    weight = 0.15;
+                }
+                total += weight * Double.valueOf(data.get(year));
+            }
+            System.out.println(total);
+            ArrayList<Double> newData = new ArrayList<>();
+            newData.add(total);
+            double currentInterest = total;
+            for (int year = 1; year < 10; year++) {
+                double percentDiff = (Double.valueOf(data.get(year)) -  Double.valueOf(data.get(year-1)))/Double.valueOf(data.get(year-1));
+                currentInterest = currentInterest + currentInterest*percentDiff;
+                newData.add(currentInterest);
+            }
+            System.out.println(newData);
+
+
             double userInvestmentPercentage = userRequest.get(i.getCategory());
-            double userInvestmentDollars = (userInvestmentPercentage / 100) * 10000;
-            for (int x = 0; x < 10; x++) {
+            double userInvestmentDollars = (userInvestmentPercentage/100) * 10000;
+            for (int year = 0; year < 10; year++) {
+                double historicalReturn = newData.get(year);
+                userInvestmentDollars = (historicalReturn/100)*userInvestmentDollars + userInvestmentDollars;
 
-                //historical interest data for category i in year x
-                double historicalInterest = Double.valueOf(i.getData().get(x));
-                double currentInterest = (historicalInterest / 100) * userInvestmentDollars;
-
-                userInvestmentDollars = userInvestmentDollars + currentInterest;
-
-                Double currentYearTotal = totalYearAmount.getOrDefault(x, 0.0);
-                //add total amount for category i in year x in Map<Integer, Double> totalYearAmount
-                //continuously sum total for each investment i in year x
-                totalYearAmount.put(x, currentYearTotal + userInvestmentDollars);
+                Double currentYearTotal = returnForYear.getOrDefault(year, 0.0);
+                returnForYear.put(year, currentYearTotal + userInvestmentDollars);
             }
         }
-        return new ArrayList<>(totalYearAmount.values());
+        return new ArrayList<>(returnForYear.values());
+        
+
+        // for (InvestmentDetail i : details) {
+        //     //user input for category i
+        //     // implement trend as well as weighted average 
+        //     // 95% confidence interval 
+        //     // std dev, subtract from most recent data point 
+        //     // if cycles in data 
+        //     // totalYearAmount is map: year, amount of total return
+        //     System.out.println(i.getCategory());
+        //     double userInvestmentPercentage = userRequest.get(i.getCategory());
+        //     double userInvestmentDollars = (userInvestmentPercentage / 100) * 10000;
+        //     for (int x = 0; x < 10; x++) {
+
+        //         System.out.println("here: " + i.getData());
+        //         //historical interest data for category i in year x
+        //         double historicalInterest = Double.valueOf(i.getData().get(x));
+        //         double currentInterest = (historicalInterest / 100) * userInvestmentDollars;
+
+        //         userInvestmentDollars = userInvestmentDollars + currentInterest;
+
+        //         Double currentYearTotal = totalYearAmount.getOrDefault(x, 0.0);
+        //         //add total amount for category i in year x in Map<Integer, Double> totalYearAmount
+        //         //continuously sum total for each investment i in year x
+        //         totalYearAmount.put(x, currentYearTotal + userInvestmentDollars);
+        //     }
+        // }
+        // System.out.println(totalYearAmount);
+        // return new ArrayList<>(totalYearAmount.values());
     }
 }
 
